@@ -1,0 +1,72 @@
+{# templates/weather/index.html.twig #}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Data</title>
+    <style>
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather Data</h1>
+    <h1>Last ran: {{ lastImportTime|date('Y-m-d H:i:s') }}</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Observed At</th>
+                <th>Parameter</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in weatherData %}
+                <tr>
+                    <td>{{ data.observedAt|date('Y-m-d H:i:s') }}</td>
+                    <td>{{ data.parameterId }}</td>
+                    <td>
+                        {% if data.parameterId == 'weather' %}
+                            {% set observationTime = data.observedAt|date('Y-m-d H:i:s') %}
+                            {% if weatherConditions[observationTime] is not empty %}
+                                {% set weatherCondition = weatherConditions[observationTime][0] %}
+                                {{ data.value }} ({{ weatherCondition.description }})
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        {% else %}
+                            {% if data.parameterId == 'temp_dry' or data.parameterId == 'temp_dew' %}
+                                {{ data.value }}°C
+                            {% elseif data.parameterId == 'humidity' %}
+                                {{ data.value }}%
+                            {% else %}
+                                {{ data.value }}
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
