@@ -33,28 +33,40 @@ class InsertWeatherConditionsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-
-        $rootDirectory = dirname(__DIR__, 2);
-        // i have stored the values for each weather code into a json file
-        $filePath = $rootDirectory . "/weatherCondition.json";
-        if (!file_exists($filePath)) {
-            $output->writeln('Error: File not found.');
-
+        try {
+            $weatherConditionsData = $this->fetchWeatherConditions();
+            $this->insertWeatherConditions($weatherConditionsData);
+            $output->writeln('Weather conditions inserted successfully.');
+            return Command::SUCCESS;
+        } catch (\Exception $e) {
+            $output->writeln('Error: ' . $e->getMessage());
             return Command::FAILURE;
         }
+    }
 
-        // fetch weather condition from json
+    private function fetchWeatherConditions(): array
+    {
+        // i have stored the values for each weather code into a json file
+        $rootDirectory = dirname(__DIR__, 2);
+        $filePath = $rootDirectory . "/weatherCondition.json";
+
+        if (!file_exists($filePath)) {
+            throw new \Exception('File not found.');
+        }
+        // fetch data from json file 
         $weatherConditionsJson = file_get_contents($filePath);
         $weatherConditionsData = json_decode($weatherConditionsJson, true);
 
         if ($weatherConditionsData === null) {
-            $output->writeln('Error: Failed to decode JSON data.');
-
-            return Command::FAILURE;
+            throw new \Exception('Failed to decode JSON data.');
         }
 
-        // insert into DB
+        return $weatherConditionsData;
+    }
 
+    private function insertWeatherConditions(array $weatherConditionsData): void
+    {
+        // insert into DB 
         foreach ($weatherConditionsData as $data) {
             $weatherCondition = new WeatherCondition();
             $weatherCondition->setCode($data['code']);
@@ -63,9 +75,5 @@ class InsertWeatherConditionsCommand extends Command
         }
 
         $this->entityManager->flush();
-
-        $output->writeln('Weather conditions inserted successfully.');
-
-        return Command::SUCCESS;
     }
 }

@@ -13,6 +13,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\HttpClient\Exception\ClientException;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 
 #[AsCommand(
@@ -27,20 +28,24 @@ class FetchWeatherDataCommand extends Command
     private $entityManager;
     private $httpClient;
     private $logger;
+    private $params;
 
-    public function __construct(EntityManagerInterface $entityManager, HttpClientInterface $httpClient, LoggerInterface $logger)
+
+    public function __construct(EntityManagerInterface $entityManager, HttpClientInterface $httpClient, LoggerInterface $logger, ParameterBagInterface $params)
     {
         parent::__construct();
 
         $this->entityManager = $entityManager;
         $this->httpClient = $httpClient;
         $this->logger = $logger;
+        $this->params = $params;
     }
 
     protected function configure()
     {
         $this->setDescription('Retrieve and store latest weather data from DMI.')
             ->setHelp('This command retrieves the latest weather data from DMI and stores it in the database.')
+            ->addArgument('stationId', InputArgument::OPTIONAL, 'StationId for which to retrieve data', '06186')
             ->addArgument('limit', InputArgument::OPTIONAL, 'Number of records to retrieve')
             ->addArgument('offset', InputArgument::OPTIONAL, 'Offset for pagination');
     }
@@ -48,9 +53,8 @@ class FetchWeatherDataCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            $apiKey = getenv('GRAVITEE_API_KEY');
-            //  $stationId = '06186';
-            $stationId = '06154';
+            $apiKey = $this->params->get('gravitee_api_key');
+            $stationId = $input->getArgument('stationId');
             $limit = $input->getArgument('limit');
             $offset = $input->getArgument('offset');
 
