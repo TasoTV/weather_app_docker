@@ -107,7 +107,6 @@ class FetchWeatherDataCommand extends Command
     private function processData(array $dataArray): void
     {
         $batchSize = 100;
-        $entityManager = $this->entityManager;
         $batchCount = 0;
 
         foreach ($dataArray['features'] as $feature) {
@@ -133,19 +132,19 @@ class FetchWeatherDataCommand extends Command
                     case 'humidity':
                     case 'weather':
                         $weatherData->setValue($value);
-                        $entityManager->persist($weatherData);
+                        $this->entityManager->persist($weatherData);
                         $batchCount++;
 
                         if ($batchCount % $batchSize === 0) {
-                            $entityManager->flush();
-                            $entityManager->clear();
+                            $this->entityManager->flush();
+                            $this->entityManager->clear();
                         }
                         break;
                 }
             }
         }
 
-        $entityManager->flush();
+        $this->entityManager->flush();
     }
 
     private function saveImportLog(): void
