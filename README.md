@@ -22,7 +22,7 @@ and inserts it into weather_data table. You can also send arguments here such as
 2. Log in with these credentials:
     * `email`: admin@example.com
     * `password`: admin
-3. Right click on `Servers` in the left corner and go to `Register -> Server` or `Crate Server` through quicklink
+3. Right click on `Servers` in the left corner and go to `Register -> Server` or `Add new Server` through quicklink
 
    NOTICE: These are just localhost credentials and this is not the correct way to expose them. They are available through the compose.yaml file, however it is much easier here so you can test it
 4. Name your server and go to `Connection` tab and enter the following
