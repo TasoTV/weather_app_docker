@@ -1,8 +1,8 @@
 ## Getting Started
 1. Execute git clone `repsitory url` into terminal in your IDE
 2. If not already done, [install Docker Compose](https://docs.docker.com/compose/install/) (v2.10+)
-3. Navigate to project and in root directory and run `docker compose build --no-cache` to build fresh images
-4. Run `docker compose up --pull always -d --wait` to set up and start a fresh Symfony project
+3. Navigate to project and in root directory run `docker compose build --no-cache` to build fresh images
+4. Run `docker compose up --pull always -d --wait` to set up and start the project
 5. Open `https://localhost` in your favorite web browser and [accept the auto-generated TLS certificate](https://stackoverflow.com/a/15076602/1352334)
 6. Run `docker compose down --remove-orphans` to stop the Docker containers
 
